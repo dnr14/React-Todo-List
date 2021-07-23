@@ -1,13 +1,16 @@
 import Header from "./component/Header";
 import Main from "./component/Main";
-import TodoListWrapper from "./component/TodoListWrapper";
+import { Wrapper, Title } from "./component/styled";
 
 function App() {
   return (
-    <TodoListWrapper>
+    <Wrapper>
+      <Title>
+        <span>어제보다 한걸음 더..📑</span>
+      </Title>
       <Header />
       <Main />
-    </TodoListWrapper>
+    </Wrapper>
   );
 }
 
