@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { StyledMain, MainInput, FillerButton } from "./styled";
+import { StyledMain, MainInput, FillerButton, StyledModal, StyledModalFooter, StyledModalContainer } from "./styled";
 import Item from "./Item";
 
 let isEnter = false;
@@ -10,6 +10,7 @@ const updateSet = new Set();
 const Main = () => {
   const [todoArray, setTodoArray] = useState([]);
   const [filter, setFilter] = useState(FILLTER_BTNS[0]);
+  const [isListFull, setIsListFull] = useState(false);
   const mainInputRef = useRef();
   const nextId = useRef(0);
 
@@ -19,8 +20,9 @@ const Main = () => {
       const { value } = mainInputRef.current;
       if (value === "" || value === " ") return;
 
-      if (todoArray.length > 10) {
-        alert("계획이 너무 많습니다.");
+      if (todoArray.length > 2) {
+        setIsListFull(true);
+        // alert("계획이 너무 많습니다.");
         return;
       }
 
@@ -43,9 +45,23 @@ const Main = () => {
     setFilter(btn);
   };
 
+  // 모달창 꾸미기 끝내기
+  // 해야할일 로컬 스토리지
+
   return (
     <StyledMain>
-      <MainInput type="text" ref={mainInputRef} onKeyPress={enterHandler} maxLength="20" placeholder="너가 해야 될 일 을 적어봐!! 😁" />
+      <StyledModal>
+        <StyledModalContainer>
+          <div className="flex-box">
+            <span>ToDoList가 꽉 찼습니다.</span>
+            <span>최대 10개</span>
+          </div>
+          <StyledModalFooter>
+            <button>확인</button>
+          </StyledModalFooter>
+        </StyledModalContainer>
+      </StyledModal>
+      <MainInput type="text" ref={mainInputRef} onKeyPress={enterHandler} maxLength="20" placeholder="네가 해야 할 일 을 적어 봐!! 😁" />
       <div>
         {FILLTER_BTNS.map((btn, idx) => (
           <FillerButton key={idx} onClick={handlClickUpdate(btn)} isSelected={btn === filter}>

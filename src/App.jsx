@@ -6,7 +6,8 @@ function App() {
   return (
     <Wrapper>
       <Title>
-        <span>어제보다 한걸음 더..📑</span>
+        <span>어제보다 </span>
+        <span>한 걸음 더 👍</span>
       </Title>
       <Header />
       <Main />
