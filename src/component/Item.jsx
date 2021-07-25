@@ -4,7 +4,7 @@ import { AiTwotoneDelete } from "react-icons/ai";
 
 let timer = null;
 
-const Item = ({ text, done, id, updateSet, setTodoArray, handlClickUpdate }) => {
+const Item = ({ idx, text, done, id, updateSet, setTodoArray, handlClickUpdate }) => {
   const labelChecked = useRef();
   const [isChecked, setIsChecked] = useState(done);
 
@@ -20,6 +20,7 @@ const Item = ({ text, done, id, updateSet, setTodoArray, handlClickUpdate }) => 
   return (
     <StyledItem isDone={isChecked}>
       <label>
+        {idx + 1}.
         <input type="checkbox" onChange={handleToggle} defaultChecked={done} ref={labelChecked} readOnly />
         <span>{text}</span>
       </label>

@@ -1,40 +1,70 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { StyledMain, MainInput, FillerButton, StyledModal, StyledModalFooter, StyledModalContainer } from "./styled";
+import { encrypt, decrypt } from "../helpers/cryto";
 import Item from "./Item";
 
 let isEnter = false;
-const FILLTER_BTNS = ["ALL", "DOING", "COMPLETED"];
+const BTNS = ["ALL", "DOING", "COMPLETED"];
 const ITEM = { text: "", done: false };
 const updateSet = new Set();
+const SECRET_KEY = process.env.REACT_APP_SECRET_KEY;
+const LOCALSTORAGE_NAME = process.env.REACT_APP_LOCALSTORAGE_TODOLIST_NAME;
+
+const getInitialValue = () => {
+  let id = 0;
+  let deCodedArray = decrypt(localStorage.getItem(LOCALSTORAGE_NAME), SECRET_KEY);
+  localStorage.hasOwnProperty(LOCALSTORAGE_NAME) ? (id = deCodedArray.length === 0 ? 0 : deCodedArray[deCodedArray.length - 1].id + 1) : (id = 0);
+  return id;
+};
+const makeLocalStorage = () => localStorage.setItem(LOCALSTORAGE_NAME, []);
+const getDecodedArray = () => {
+  let decodedArray;
+  localStorage.hasOwnProperty(LOCALSTORAGE_NAME)
+    ? (decodedArray = decrypt(localStorage.getItem(LOCALSTORAGE_NAME), SECRET_KEY))
+    : (decodedArray = []);
+  return decodedArray;
+};
 
 const Main = () => {
-  const [todoArray, setTodoArray] = useState([]);
-  const [filter, setFilter] = useState(FILLTER_BTNS[0]);
+  const firstDecodedArray = useMemo(() => getDecodedArray(), []);
+  const initialValue = useMemo(() => getInitialValue(), []);
+  const [todoArray, setTodoArray] = useState(firstDecodedArray);
+  const [filter, setFilter] = useState(BTNS[0]);
   const [isListFull, setIsListFull] = useState(false);
   const mainInputRef = useRef();
-  const nextId = useRef(0);
+  const nextId = useRef(initialValue);
+
+  useEffect(() => {
+    if (!localStorage.hasOwnProperty(LOCALSTORAGE_NAME)) {
+      makeLocalStorage();
+    }
+    window.addEventListener("beforeunload", () => {
+      const encodedArray = encrypt(todoArray, SECRET_KEY);
+      localStorage.setItem(LOCALSTORAGE_NAME, encodedArray);
+    });
+  }, [todoArray]);
 
   const enterHandler = (e) => {
     const { key } = e;
     if (key === "Enter") {
       const { value } = mainInputRef.current;
+
       if (value === "" || value === " ") return;
 
-      if (todoArray.length > 2) {
+      if (todoArray.length === 10) {
+        mainInputRef.current.blur();
         setIsListFull(true);
-        // alert("계획이 너무 많습니다.");
         return;
       }
 
       if (!isEnter) {
         isEnter = !isEnter;
-        setTodoArray((prevArray) => [...prevArray, { ...ITEM, id: nextId.current, text: value }]);
-        nextId.current++;
-        mainInputRef.current.value = "";
-
+        setTodoArray([...todoArray, { ...ITEM, id: nextId.current++, text: value }]);
         setTimeout(() => (isEnter = false), 500);
+        mainInputRef.current.value = "";
       } else {
-        alert("너무빨라");
+        mainInputRef.current.blur();
+        setIsListFull(true);
       }
     }
   };
@@ -45,25 +75,29 @@ const Main = () => {
     setFilter(btn);
   };
 
-  // 모달창 꾸미기 끝내기
-  // 해야할일 로컬 스토리지
-
   return (
     <StyledMain>
-      <StyledModal>
-        <StyledModalContainer>
+      <StyledModal isListFull={isListFull}>
+        <StyledModalContainer isListFull={isListFull}>
           <div className="flex-box">
-            <span>ToDoList가 꽉 찼습니다.</span>
-            <span>최대 10개</span>
+            {isEnter ? (
+              <span>너무 빠릅니다.</span>
+            ) : (
+              <>
+                <span>ToDoList가 꽉 찼습니다.</span>
+                <span>최대 10개</span>
+              </>
+            )}
           </div>
           <StyledModalFooter>
-            <button>확인</button>
+            <button onClick={() => setIsListFull(false)}>확인</button>
           </StyledModalFooter>
         </StyledModalContainer>
       </StyledModal>
+
       <MainInput type="text" ref={mainInputRef} onKeyPress={enterHandler} maxLength="20" placeholder="네가 해야 할 일 을 적어 봐!! 😁" />
       <div>
-        {FILLTER_BTNS.map((btn, idx) => (
+        {BTNS.map((btn, idx) => (
           <FillerButton key={idx} onClick={handlClickUpdate(btn)} isSelected={btn === filter}>
             {btn}
           </FillerButton>
@@ -71,9 +105,9 @@ const Main = () => {
       </div>
       <div>
         {todoArray
-          .filter((item) => (filter === "ALL" ? item : filter === "DOING" ? !item.done : item.done))
-          .map((item) => (
-            <Item handlClickUpdate={handlClickUpdate(filter)} updateSet={updateSet} item={item} key={item.id} {...item} setTodoArray={setTodoArray} />
+          .filter((item) => (filter === BTNS[0] ? item : filter === BTNS[1] ? !item.done : item.done))
+          .map((item, idx) => (
+            <Item idx={idx} key={item.id} {...item} updateSet={updateSet} handlClickUpdate={handlClickUpdate(filter)} setTodoArray={setTodoArray} />
           ))}
       </div>
     </StyledMain>

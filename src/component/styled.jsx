@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle, css, keyframes } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
   *, *::before, *::after {
@@ -84,12 +84,13 @@ export const StyledHeader = styled.div`
   background-color: #2ecc71;
 
   & > div {
-    margin-left: 45px;
-    padding: 5px 0px 10px 0px;
-
-    @media only screen and (max-width: 768px) {
-      width: 80%;
-      margin: 0 auto;
+    &:nth-child(2) {
+      margin-left: 45px;
+      padding: 5px 0px 10px 0px;
+      @media only screen and (max-width: 768px) {
+        width: 80%;
+        margin: 0 auto;
+      }
     }
   }
 `;
@@ -100,13 +101,6 @@ export const StyleSpan = styled.span`
 
   & + & {
     margin-left: 10px;
-  }
-
-  @media only screen and (max-width: 768px) {
-    display: inline-block;
-    &:last-child {
-      margin: 0;
-    }
   }
 `;
 
@@ -167,11 +161,13 @@ export const StyledItem = styled.div`
   label {
     display: block;
     cursor: pointer;
+    padding-left: 10px;
 
     & > input {
       vertical-align: middle;
       width: 20px;
       height: 20px;
+      margin-left: 10px;
     }
 
     & > span {
@@ -201,6 +197,36 @@ export const FillerButton = styled.button`
   }
 `;
 
+// 애니메이션
+const fadeIn = keyframes`
+  from{
+    opacity:0;
+  }
+
+  to{
+    opacity:1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from{
+    opacity:1;
+  }
+
+  to{
+    opacity:0;
+  }
+`;
+
+const slideUp = keyframes`
+  from{
+    transform:translateY(300px);
+  }
+  to{
+    transform:translateY(150px);
+  }
+`;
+
 export const StyledModal = styled.div`
   position: fixed;
   background-color: rgba(149, 165, 166, 0.5);
@@ -208,25 +234,46 @@ export const StyledModal = styled.div`
   left: 0;
   bottom: 0;
   right: 0;
+
+  animation-duration: 0.25s;
+  animation-timing-function: ease-out;
+  animation-name: ${fadeIn};
+  animation-fill-mode: forwards;
+  visibility: ${({ isListFull }) => !isListFull && "hidden"};
   z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 1;
-  transition: opacity 0.5s;
+
+  ${({ isListFull }) =>
+    !isListFull &&
+    css`
+      animation-name: ${fadeOut};
+    `}
 `;
 
 export const StyledModalContainer = styled.div`
   width: 300px;
-  height: 150px;
+  height: 130px;
   min-width: 200px;
   background-color: white;
   border-radius: 5px;
   position: relative;
+  left: 0;
+  right: 0;
+  margin: auto;
   box-shadow: 5px 5px 5px rgba(149, 165, 166, 0.5);
-  .flex-box {
+
+  animation-duration: 0.25s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+
+  ${({ isListFull }) =>
+    isListFull &&
+    css`
+      animation-name: ${slideUp};
+    `}
+
+  & > div {
     position: absolute;
-    top: 50px;
+    top: 30px;
     right: 0;
     left: 0;
     width: 90%;
@@ -239,12 +286,27 @@ export const StyledModalContainer = styled.div`
     }
   }
 `;
-export const StyledModalFooter = styled.div`
-  width: 100%;
+export const StyledModalFooter = styled.footer`
   background-color: transparent;
   padding: 10px;
   position: absolute;
   bottom: 0;
   display: flex;
   justify-content: center;
+  width: 100%;
+
+  & > button {
+    padding: 2.5px 10px;
+    background-color: rgba(46, 204, 113, 0.5);
+    cursor: pointer;
+    border: none;
+    border-radius: 2px;
+    color: white;
+    font-weight: bold;
+    &:hover {
+      background-color: transparent;
+      border: 2px solid rgba(46, 204, 113, 1);
+      color: #000;
+    }
+  }
 `;
