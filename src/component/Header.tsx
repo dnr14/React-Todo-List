@@ -1,4 +1,3 @@
-import React from "react";
 import { StyledHeader, StyleSpan, Title } from "./styled";
 
 const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -7,7 +6,6 @@ const toDay = new Date();
 
 const get_YYDDMMDAY = () => {
   const toDayArray = [];
-
   toDayArray.push(toDay.getFullYear());
   toDayArray.push(toDay.getMonth() + 1);
   toDayArray.push(toDay.getDate());
