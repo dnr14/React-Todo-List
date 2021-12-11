@@ -1,6 +1,8 @@
 import styled, { createGlobalStyle, css, keyframes } from "styled-components";
+import { normalize } from "styled-normalize";
 
 const GlobalStyle = createGlobalStyle`
+  ${normalize}
   *, *::before, *::after {
     box-sizing: border-box;
   
@@ -95,7 +97,11 @@ export const StyledHeader = styled.div`
   }
 `;
 
-export const StyleSpan = styled.span`
+type StyleSpanProps = {
+  isBold: boolean;
+};
+
+export const StyleSpan = styled.span<StyleSpanProps>`
   font-weight: ${({ isBold }) => isBold && `900`};
   font-size: 1rem;
 
@@ -132,7 +138,11 @@ export const TodoList = styled.div`
   margin-top: 10px;
 `;
 
-export const StyledItem = styled.div`
+type StyledItemProps = {
+  isDone: boolean;
+};
+
+export const StyledItem = styled.div<StyledItemProps>`
   position: relative;
   & + & {
     margin-top: 5px;
@@ -148,7 +158,8 @@ export const StyledItem = styled.div`
     cursor: pointer;
 
     &:active {
-      filter: invert(59%) sepia(85%) saturate(388%) hue-rotate(93deg) brightness(95%) contrast(88%);
+      filter: invert(59%) sepia(85%) saturate(388%) hue-rotate(93deg)
+        brightness(95%) contrast(88%);
     }
   }
 
@@ -186,11 +197,21 @@ export const StyledItem = styled.div`
   }
 `;
 
-export const FillerButton = styled.button`
+interface FillerButtonProps {
+  isSelected: boolean;
+}
+
+export const FillerButton = styled.button<FillerButtonProps>`
   border: 1px solid #333;
   cursor: pointer;
   padding: 2px 5px;
-  background-color: ${({ isSelected }) => (isSelected ? "#2ecc71" : "white")};
+  background-color: white;
+  ${({ isSelected }) =>
+    isSelected &&
+    css`
+      background-color: #2ecc71;
+    `};
+
   border-radius: 2px;
   & + & {
     margin-left: 5px;
@@ -227,7 +248,11 @@ const slideUp = keyframes`
   }
 `;
 
-export const StyledModal = styled.div`
+type StyledModalProps = {
+  isListFull: boolean;
+};
+
+export const StyledModal = styled.div<StyledModalProps>`
   position: fixed;
   background-color: rgba(149, 165, 166, 0.5);
   top: 0;
@@ -249,7 +274,7 @@ export const StyledModal = styled.div`
     `}
 `;
 
-export const StyledModalContainer = styled.div`
+export const StyledModalContainer = styled.div<StyledModalProps>`
   width: 300px;
   height: 130px;
   min-width: 200px;
