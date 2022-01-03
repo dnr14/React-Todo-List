@@ -3,14 +3,13 @@ import {
   StyledMain,
   MainInput,
   FillerButton,
-  StyledModal,
   StyledModalFooter,
-  StyledModalContainer,
 } from "./styled";
 import { encrypt, decrypt } from "../helpers/cryto";
 import { getItem, hasKeys, setItem } from "../helpers/storageUtils";
 import { OnKeyEvent, ItemObject } from "../types/types";
 import Item from "./Item";
+import Modal from "./Modal";
 
 const BTNS: string[] = ["ALL", "DONING", "COMPLETED"];
 const ITEM: ItemObject = { id: 0, text: "", done: false };
@@ -42,7 +41,7 @@ const Main = () => {
   const initialValue = useMemo<number>(() => getInitialValue(), []);
   const [todoArray, setTodoArray] = useState<ItemObject[]>(firstDecodedArray);
   const [filter, setFilter] = useState<string>(BTNS[0]);
-  const [isListFull, setIsListFull] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const mainInputRef = useRef<HTMLInputElement>(null);
   const nextId = useRef<number>(initialValue);
   const isEnter = useRef<boolean>(false);
@@ -57,9 +56,7 @@ const Main = () => {
     if (!hasKeys(LOCALSTORAGE_NAME)) {
       makeLocalStorage();
     }
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
+    const handleBeforeUnload = () => {
       const encodedArray = encrypt(todoArray, SECRET_KEY);
       setItem(LOCALSTORAGE_NAME, encodedArray);
     };
@@ -75,7 +72,7 @@ const Main = () => {
 
       if (todoArray.length === 10) {
         current.blur();
-        setIsListFull(true);
+        setIsOpen(true);
         return;
       }
 
@@ -91,7 +88,7 @@ const Main = () => {
       }
 
       current.blur();
-      setIsListFull(true);
+      setIsOpen(true);
     }
   };
 
@@ -107,10 +104,24 @@ const Main = () => {
     setFilter(btn);
   };
 
+  const close = useCallback(
+    (cb: () => void): React.ReactNode => (
+      <StyledModalFooter>
+        <button onClick={() => cb()}>확인</button>
+      </StyledModalFooter>
+    ),
+    []
+  );
+
   return (
-    <StyledMain>
-      <StyledModal isListFull={isListFull}>
-        <StyledModalContainer isListFull={isListFull}>
+    <>
+      <StyledMain>
+        <Modal
+          isOpne={isOpen}
+          delay={2000}
+          render={close}
+          setIsOpne={setIsOpen}
+        >
           <div className="flex-box">
             {isEnter.current ? (
               <span>너무 빠릅니다.</span>
@@ -121,50 +132,47 @@ const Main = () => {
               </>
             )}
           </div>
-          <StyledModalFooter>
-            <button onClick={() => setIsListFull(false)}>확인</button>
-          </StyledModalFooter>
-        </StyledModalContainer>
-      </StyledModal>
-      <MainInput
-        type="text"
-        ref={mainInputRef}
-        onKeyPress={enterHandler}
-        placeholder="네가 해야 할 일 을 적어 봐!! 😁"
-        maxLength={20}
-      />
-      <div>
-        {BTNS.map((btn, idx) => (
-          <FillerButton
-            key={idx}
-            onClick={handlClickUpdate(btn)}
-            isSelected={btn === filter}
-          >
-            {btn}
-          </FillerButton>
-        ))}
-      </div>
-      <div>
-        {todoArray
-          .filter((item) =>
-            filter === BTNS[0]
-              ? item
-              : filter === BTNS[1]
-              ? !item.done
-              : item.done
-          )
-          .map((item, idx) => (
-            <Item
-              idx={idx}
-              {...item}
-              key={item.id}
-              updateSet={updateSet}
-              handlClickUpdate={handlClickUpdate(filter)}
-              setTodoArray={setTodoArray}
-            />
+        </Modal>
+        <MainInput
+          type="text"
+          ref={mainInputRef}
+          onKeyPress={enterHandler}
+          placeholder="네가 해야 할 일 을 적어 봐!! 😁"
+          maxLength={20}
+        />
+        <div>
+          {BTNS.map((btn, idx) => (
+            <FillerButton
+              key={idx}
+              onClick={handlClickUpdate(btn)}
+              isSelected={btn === filter}
+            >
+              {btn}
+            </FillerButton>
           ))}
-      </div>
-    </StyledMain>
+        </div>
+        <div>
+          {todoArray
+            .filter((item) =>
+              filter === BTNS[0]
+                ? item
+                : filter === BTNS[1]
+                ? !item.done
+                : item.done
+            )
+            .map((item, idx) => (
+              <Item
+                idx={idx}
+                {...item}
+                key={item.id}
+                updateSet={updateSet}
+                handlClickUpdate={handlClickUpdate(filter)}
+                setTodoArray={setTodoArray}
+              />
+            ))}
+        </div>
+      </StyledMain>
+    </>
   );
 };
 

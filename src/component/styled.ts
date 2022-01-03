@@ -9,6 +9,7 @@ const GlobalStyle = createGlobalStyle`
   }
   html{
     @media only screen and (max-width: 768px) {
+      
         font-size: 20px;
     }
   }
@@ -247,9 +248,17 @@ const slideUp = keyframes`
     transform:translateY(150px);
   }
 `;
+const slideDown = keyframes`
+  from{
+    transform:translateY(300px);
+  }
+  to{
+    transform:translateY(150px);
+  }
+`;
 
 type StyledModalProps = {
-  isListFull: boolean;
+  visible: boolean;
 };
 
 export const StyledModal = styled.div<StyledModalProps>`
@@ -259,19 +268,21 @@ export const StyledModal = styled.div<StyledModalProps>`
   left: 0;
   bottom: 0;
   right: 0;
-
-  animation-duration: 0.25s;
-  animation-timing-function: ease-out;
-  animation-name: ${fadeIn};
-  animation-fill-mode: forwards;
-  visibility: ${({ isListFull }) => !isListFull && "hidden"};
   z-index: 1;
+  opacity: 0;
+  transition: opacity 1s ease-in;
 
-  ${({ isListFull }) =>
-    !isListFull &&
+  ${({ visible }) =>
+    visible &&
     css`
-      animation-name: ${fadeOut};
-    `}
+      opacity: 1;
+    `};
+
+  /* ${({ visible }) =>
+    !visible &&
+    css`
+      transition: opacity 1s ease-in;
+    `} */
 `;
 
 export const StyledModalContainer = styled.div<StyledModalProps>`
@@ -285,16 +296,20 @@ export const StyledModalContainer = styled.div<StyledModalProps>`
   right: 0;
   margin: auto;
   box-shadow: 5px 5px 5px rgba(149, 165, 166, 0.5);
+  transition: transform 1s ease-in;
+  transform: translateY(300px);
 
-  animation-duration: 0.25s;
-  animation-timing-function: ease-out;
-  animation-fill-mode: forwards;
-
-  ${({ isListFull }) =>
-    isListFull &&
+  ${({ visible }) =>
+    visible &&
     css`
-      animation-name: ${slideUp};
-    `}
+      transform: translateY(150px);
+    `};
+
+  /* ${({ visible }) =>
+    !visible &&
+    css`
+      transition: transform 1s ease-in;
+    `} */
 
   & > div {
     position: absolute;
