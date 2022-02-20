@@ -263,7 +263,7 @@ export const ModalInnerWrap = styled.div<{ visible: boolean }>`
       transform: translateY(150px);
     `};
 
-  & > div {
+  .flex-box {
     position: absolute;
     top: 30px;
     right: 0;
@@ -272,7 +272,7 @@ export const ModalInnerWrap = styled.div<{ visible: boolean }>`
     margin: auto;
     font-size: 1rem;
     text-align: center;
-    font-weight: bold;
+    font-weight: 400;
     & > span {
       display: block;
     }
@@ -283,7 +283,10 @@ export const ModalFooter = styled.footer`
   padding: 10px;
   position: absolute;
   bottom: 0;
-  ${justifyAlign("center", "unset")}
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-align: center;
 
   & > button {
     padding: 5px 10px;
