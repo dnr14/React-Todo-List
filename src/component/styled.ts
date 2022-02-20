@@ -1,25 +1,36 @@
-import styled, { createGlobalStyle, css, keyframes } from "styled-components";
+import styled, { createGlobalStyle, css } from "styled-components";
 import { normalize } from "styled-normalize";
+
+const SIZE = {
+  mobile: 512,
+  tab: 768,
+};
+
+const mobile = () => `@media only screen and (max-width: ${SIZE.mobile}px)`;
+const tab = () => `@media only screen and (max-width: ${SIZE.tab}px)`;
+const colorWhite = () => `#fff`;
+const colorBrandSaturationFull = () => `rgba(46, 204, 113, 1)`;
+const colorBrandSaturationHalf = () => `rgba(46, 204, 113, 0.5)`;
+const justifyAlign: JustifyAlignFn = (justify, align) => css`
+  display: flex;
+  justify-content: ${justify};
+  align-items: ${align};
+`;
 
 const GlobalStyle = createGlobalStyle`
   ${normalize}
   *, *::before, *::after {
     box-sizing: border-box;
-  
   }
   html{
-    @media only screen and (max-width: 768px) {
-      
-        font-size: 20px;
+    ${mobile}{
+      font-size: 20px;
     }
   }
 
-
   body {
-    font-family: "Helvetica", "Arial", sans-serif;
     line-height: 1.5;
-
-   
+    font-family: 'Ubuntu Mono', monospace;
   }
 
   h2, p {
@@ -34,91 +45,81 @@ const GlobalStyle = createGlobalStyle`
     font-size: 1rem;
   }
 
-
 `;
 
 export default GlobalStyle;
 
 export const Wrapper = styled.div`
   position: relative;
-  display: flex;
-  align-items: center;
+  ${justifyAlign("unset", "center")}
   flex-direction: column;
   max-width: 500px;
   margin: auto;
-  border: 1px solid #333;
   margin-top: 100px;
-  background-color: white;
-  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  background-color: ${colorWhite};
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   border-radius: 5px;
   min-width: 360px;
-
-  @media only screen and (max-width: 768px) {
+  ${tab} {
     width: 80%;
   }
-
-  @media only screen and (max-width: 512px) {
+  ${mobile} {
     margin-top: 0;
   }
 `;
 
 export const Title = styled.div`
-  line-height: 3.125rem;
   font-size: 2.5rem;
   text-align: center;
   padding: 20px 10px 5px 10px;
-  background-color: #2ecc71;
-  width: 100%;
+  background-color: ${colorBrandSaturationFull};
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
+  color: ${colorWhite};
 
-  @media only screen and (max-width: 768px) {
+  ${tab} {
+    font-size: 1.5rem;
     & > span {
-      display: inline-block;
       width: 100%;
     }
   }
 `;
 
-export const StyledHeader = styled.div`
-  display: flex;
-  flex-direction: column;
+export const HeaderWrap = styled.header`
   width: 100%;
-  background-color: #2ecc71;
+  background-color: ${colorBrandSaturationFull};
+  ${justifyAlign("unset", "unset")}
+  flex-direction: column;
 
-  & > div {
-    &:nth-child(2) {
-      margin-left: 45px;
-      padding: 5px 0px 10px 0px;
-      @media only screen and (max-width: 768px) {
-        width: 80%;
-        margin: 0 auto;
-      }
+  & > div:nth-child(2) {
+    margin-left: 45px;
+    padding: 5px 0px 10px 0px;
+    ${tab} {
+      width: 80%;
+      margin: 0 auto;
     }
   }
 `;
 
-type StyleSpanProps = {
-  isBold: boolean;
-};
-
-export const StyleSpan = styled.span<StyleSpanProps>`
+export const DateContent = styled.span<{ isBold: boolean }>`
   font-weight: ${({ isBold }) => isBold && `900`};
   font-size: 1rem;
-
   & + & {
     margin-left: 10px;
   }
+
+  ${tab} {
+    font-size: 0.7rem;
+  }
 `;
 
-export const StyledMain = styled.div`
+export const MainWrap = styled.main`
   width: 100%;
   padding: 10px;
 
-  & > div {
-    &:nth-child(n + 2) {
-      margin-top: 10px;
-    }
+  & > div:nth-child(n + 2) {
+    margin-top: 10px;
   }
 `;
 
@@ -130,20 +131,15 @@ export const MainInput = styled.input`
   outline: none;
   border: 1px solid #333;
 
-  @media only screen and (max-width: 768px) {
-    font-size: 1rem;
+  ${tab} {
+    font-size: 0.8rem;
+    &::placeholder {
+      font-size: 0.8rem;
+    }
   }
 `;
 
-export const TodoList = styled.div`
-  margin-top: 10px;
-`;
-
-type StyledItemProps = {
-  isDone: boolean;
-};
-
-export const StyledItem = styled.div<StyledItemProps>`
+export const ItemWrap = styled.div<{ isDone: boolean }>`
   position: relative;
   & + & {
     margin-top: 5px;
@@ -185,83 +181,51 @@ export const StyledItem = styled.div<StyledItemProps>`
     & > span {
       vertical-align: middle;
       margin-left: 5px;
+    }
+
+    & > span:first-child {
+      display: inline-block;
+      width: 25px;
+      margin: 0;
+      text-align: center;
+      font-weight: 900;
+    }
+    & > span:last-child {
       text-decoration: ${({ isDone }) => isDone && "line-through"};
     }
 
     &:hover {
-      background-color: rgba(46, 204, 113, 0.5);
+      background-color: ${colorBrandSaturationHalf};
 
-      & > span {
+      & > span:last-child {
         text-decoration: line-through;
       }
     }
   }
 `;
 
-interface FillerButtonProps {
-  isSelected: boolean;
-}
-
-export const FillerButton = styled.button<FillerButtonProps>`
-  border: 1px solid #333;
+export const FillerButton = styled.button<{ isSelected: boolean }>`
   cursor: pointer;
+  border: 1px solid #333;
   padding: 2px 5px;
-  background-color: white;
-  ${({ isSelected }) =>
-    isSelected &&
-    css`
-      background-color: #2ecc71;
-    `};
-
+  background-color: ${colorWhite};
   border-radius: 2px;
+  font-size: 0.9rem;
   & + & {
     margin-left: 5px;
   }
+
+  ${({ isSelected }) =>
+    isSelected &&
+    css`
+      background-color: ${colorBrandSaturationFull};
+      color: ${colorWhite};
+      font-weight: 900;
+      border-color: ${colorBrandSaturationFull};
+    `};
 `;
 
-// 애니메이션
-const fadeIn = keyframes`
-  from{
-    opacity:0;
-  }
-
-  to{
-    opacity:1;
-  }
-`;
-
-const fadeOut = keyframes`
-  from{
-    opacity:1;
-  }
-
-  to{
-    opacity:0;
-  }
-`;
-
-const slideUp = keyframes`
-  from{
-    transform:translateY(300px);
-  }
-  to{
-    transform:translateY(150px);
-  }
-`;
-const slideDown = keyframes`
-  from{
-    transform:translateY(300px);
-  }
-  to{
-    transform:translateY(150px);
-  }
-`;
-
-type StyledModalProps = {
-  visible: boolean;
-};
-
-export const StyledModal = styled.div<StyledModalProps>`
+export const ModalWrap = styled.div<{ visible: boolean }>`
   position: fixed;
   background-color: rgba(149, 165, 166, 0.5);
   top: 0;
@@ -277,17 +241,11 @@ export const StyledModal = styled.div<StyledModalProps>`
     css`
       opacity: 1;
     `};
-
-  /* ${({ visible }) =>
-    !visible &&
-    css`
-      transition: opacity 1s ease-in;
-    `} */
 `;
 
-export const StyledModalContainer = styled.div<StyledModalProps>`
+export const ModalInnerWrap = styled.div<{ visible: boolean }>`
   width: 300px;
-  height: 130px;
+  height: 120px;
   min-width: 200px;
   background-color: white;
   border-radius: 5px;
@@ -295,7 +253,7 @@ export const StyledModalContainer = styled.div<StyledModalProps>`
   left: 0;
   right: 0;
   margin: auto;
-  box-shadow: 5px 5px 5px rgba(149, 165, 166, 0.5);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   transition: transform 1s ease-in;
   transform: translateY(300px);
 
@@ -304,12 +262,6 @@ export const StyledModalContainer = styled.div<StyledModalProps>`
     css`
       transform: translateY(150px);
     `};
-
-  /* ${({ visible }) =>
-    !visible &&
-    css`
-      transition: transform 1s ease-in;
-    `} */
 
   & > div {
     position: absolute;
@@ -326,27 +278,61 @@ export const StyledModalContainer = styled.div<StyledModalProps>`
     }
   }
 `;
-export const StyledModalFooter = styled.footer`
+export const ModalFooter = styled.footer`
   background-color: transparent;
   padding: 10px;
   position: absolute;
   bottom: 0;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  ${justifyAlign("center", "unset")}
 
   & > button {
-    padding: 2.5px 10px;
-    background-color: rgba(46, 204, 113, 0.5);
+    padding: 5px 10px;
+    background-color: ${colorBrandSaturationFull};
     cursor: pointer;
+    font-weight: bold;
     border: none;
     border-radius: 2px;
-    color: white;
-    font-weight: bold;
+    color: ${colorWhite};
     &:hover {
-      background-color: transparent;
-      border: 2px solid rgba(46, 204, 113, 1);
-      color: #000;
+      background-color: ${colorBrandSaturationHalf};
     }
   }
 `;
+
+// 애니메이션
+// const fadeIn = keyframes`
+//   from{
+//     opacity:0;
+//   }
+
+//   to{
+//     opacity:1;
+//   }
+// `;
+
+// const fadeOut = keyframes`
+//   from{
+//     opacity:1;
+//   }
+
+//   to{
+//     opacity:0;
+//   }
+// `;
+
+// const slideUp = keyframes`
+//   from{
+//     transform:translateY(300px);
+//   }
+//   to{
+//     transform:translateY(150px);
+//   }
+// `;
+// const slideDown = keyframes`
+//   from{
+//     transform:translateY(300px);
+//   }
+//   to{
+//     transform:translateY(150px);
+//   }
+// `;

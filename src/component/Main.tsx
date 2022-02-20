@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  StyledMain,
-  MainInput,
-  FillerButton,
-  StyledModalFooter,
-} from "./styled";
+import { MainWrap, MainInput, FillerButton, ModalFooter } from "./styled";
 import { encrypt, decrypt } from "../helpers/cryto";
 import { getItem, hasKeys, setItem } from "../helpers/storageUtils";
-import { OnKeyEvent, ItemObject } from "../types/types";
 import Item from "./Item";
 import Modal from "./Modal";
 
-const BTNS: string[] = ["ALL", "DONING", "COMPLETED"];
-const ITEM: ItemObject = { id: 0, text: "", done: false };
+const BTNS: ButtonTypes[] = ["ALL", "DONING", "COMPLETED"];
+const ITEM: Item = { id: 0, text: "", done: false };
 const updateSet = new Set<number>();
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "";
 const LOCALSTORAGE_NAME =
@@ -37,9 +31,9 @@ const getDecodedArray = () => {
 };
 
 const Main = () => {
-  const firstDecodedArray = useMemo<ItemObject[]>(() => getDecodedArray(), []);
+  const firstDecodedArray = useMemo<Item[]>(() => getDecodedArray(), []);
   const initialValue = useMemo<number>(() => getInitialValue(), []);
-  const [todoArray, setTodoArray] = useState<ItemObject[]>(firstDecodedArray);
+  const [todoArray, setTodoArray] = useState<Item[]>(firstDecodedArray);
   const [filter, setFilter] = useState<string>(BTNS[0]);
   const [isOpen, setIsOpen] = useState(false);
   const mainInputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +46,6 @@ const Main = () => {
   );
 
   useEffect(() => {
-    // 로컬스토리지에 없다면 초기값 []로 세팅
     if (!hasKeys(LOCALSTORAGE_NAME)) {
       makeLocalStorage();
     }
@@ -105,17 +98,17 @@ const Main = () => {
   };
 
   const close = useCallback(
-    (cb: () => void): React.ReactNode => (
-      <StyledModalFooter>
+    (cb: () => void): JSX.Element => (
+      <ModalFooter>
         <button onClick={() => cb()}>확인</button>
-      </StyledModalFooter>
+      </ModalFooter>
     ),
     []
   );
 
   return (
     <>
-      <StyledMain>
+      <MainWrap>
         <Modal
           isOpne={isOpen}
           delay={2000}
@@ -171,7 +164,7 @@ const Main = () => {
               />
             ))}
         </div>
-      </StyledMain>
+      </MainWrap>
     </>
   );
 };

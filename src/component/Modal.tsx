@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyledModal, StyledModalContainer } from "./styled";
+import { ModalWrap, ModalInnerWrap } from "./styled";
 
 type ModalProps = {
   isOpne: boolean;
   delay: number;
   children: React.ReactNode;
   setIsOpne: (p: React.SetStateAction<boolean>) => void;
-  render: (p: () => void) => React.ReactNode;
+  render: (p: () => void) => JSX.Element;
 };
 
 const Modal = ({ isOpne, delay, setIsOpne, render, children }: ModalProps) => {
@@ -35,35 +35,15 @@ const Modal = ({ isOpne, delay, setIsOpne, render, children }: ModalProps) => {
   return (
     <>
       {isOpne && (
-        <StyledModal visible={visible}>
-          <StyledModalContainer visible={visible}>
+        <ModalWrap visible={visible}>
+          <ModalInnerWrap visible={visible}>
             {children}
             {render(close)}
-          </StyledModalContainer>
-        </StyledModal>
+          </ModalInnerWrap>
+        </ModalWrap>
       )}
     </>
   );
 };
-// const StyledModal = styled.div<{ visible: boolean }>`
-//   position: absolute;
-//   opacity: 0;
-//   transform: translateY(0px);
-//   transition: transform 2s ease-in, opacity 1s ease-in;
-//   ${({ visible }) => {
-//     return (
-//       visible &&
-//       css`
-//         opacity: 1;
-//         transform: translateY(-100px);
-//       `
-//     );
-//   }};
-//   ${({ visible }) =>
-//     !visible &&
-//     css`
-//       transition: transform 1s ease-in, opacity 1s ease-in;
-//     `}
-// `;
 
 export default Modal;

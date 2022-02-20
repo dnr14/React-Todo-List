@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
-import { StyledItem } from "./styled";
+import { ItemWrap } from "./styled";
 import { AiTwotoneDelete } from "react-icons/ai";
-import { ItemObject } from "../types/types";
 
 type ItemProps = {
   idx: number;
@@ -9,11 +8,11 @@ type ItemProps = {
   done: boolean;
   id: number;
   updateSet: Set<number>;
-  setTodoArray: (v: React.SetStateAction<ItemObject[]>) => void;
+  setTodoArray: (v: React.SetStateAction<Item[]>) => void;
   handlClickUpdate: () => void;
 };
 
-let timer: any = null;
+let timer: ThrottlingType = null;
 
 const Item = ({
   idx,
@@ -43,9 +42,9 @@ const Item = ({
     );
 
   return (
-    <StyledItem isDone={isChecked}>
+    <ItemWrap isDone={isChecked}>
       <label>
-        {idx + 1}.
+        <span>{idx + 1}.</span>
         <input
           type="checkbox"
           onChange={handleToggle}
@@ -56,7 +55,7 @@ const Item = ({
         <span>{text}</span>
       </label>
       <AiTwotoneDelete onClick={handleItemRemove} />
-    </StyledItem>
+    </ItemWrap>
   );
 };
 
